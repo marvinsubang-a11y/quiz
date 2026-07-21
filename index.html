@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Apple Fraud Assistance Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    .quiz-container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    .options button:hover {
+      background: #0056b3;
+    }
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #score {
+      font-weight: bold;
+    }
+    #resetBtn {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #resetBtn:hover {
+      background: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Apple Fraud Assistance Quiz</h1>
+    <div id="quiz"></div>
+    <div id="controls">
+      <button id="nextBtn" style="display:none;">Next Question</button>
+      <button id="resetBtn">Reset Quiz</button>
+    </div>
+    <p id="score"></p>
+  </div>
+
+  <script>
+    const quizData = [
+      {question:"What type of Apple Purchase?",options:["For Apple gift cards","For iPhone","For iCloud"],correct:0},
+      {question:"How did they access my account without security code?",options:["Hackers use phishing, SIM swaps, or malware.","They guessed password.","Apple gave access."],correct:0},
+      {question:"Can you send me a code instead?",options:["We must complete verification to confirm rightful ownership.","We don’t send codes.","Codes are only for employees."],correct:0},
+      {question:"How do I verify I’m connected to real Apple care?",options:["The alert message included a phone number—that’s why you have me on the line.","You can’t verify us.","We don’t provide verification."],correct:0},
+      {question:"Customer not convinced they reached correct department?",options:["Apple notifies customers immediately when accounts may be at risk. This department exists to secure accounts.","Ignore them.","We don’t handle fraud."],correct:0},
+      {question:"You don’t sound like Steve (accent issue).",options:["I am half American, accent aside I can help you.","I’m not Steve.","Ignore accent."],correct:0},
+      {question:"I don’t trust you, I’ll talk to FTC myself.",options:["We work closely with FTC, so to avoid delays, allow us to assist.","You cannot contact FTC.","Ignore FTC."],correct:0},
+      {question:"Customer refuses to give date of birth.",options:["We ask to confirm legal age and authorized access.","We don’t need it.","Ignore DOB."],correct:0},
+      {question:"Customer refuses to give banking details.",options:["We ask to ensure banking info isn’t compromised.","We don’t need it.","Ignore banks."],correct:0},
+      {question:"Don’t you already have my banking details?",options:["System secured info, we need to confirm bank isn’t compromised.","We don’t have it.","Ignore banks."],correct:0},
+      {question:"Don’t you already have my email address?",options:["We need the email linked to your Apple account to check the alert.","We don’t need it.","Ignore email."],correct:0},
+      {question:"Why do I need to write info? Can’t you email it?",options:["Info is needed by FTC once you speak with them.","We don’t need it.","Ignore writing."],correct:0},
+      {question:"Will I speak to an American from FTC?",options:["FTC personnel are licensed and experienced in fraud resolution.","No.","Ignore FTC."],correct:0},
+      {question:"What is the FTC number?",options:["They use internal line, you must first speak with Fraud Resolution Department.","We don’t know.","Ignore FTC."],correct:0},
+      {question:"Customer is in a rush.",options:["If info is misused, you could be held responsible. Please be patient.","Ignore rush.","We don’t care."],correct:0},
+      {question:"Linking Apple account to other services unsuccessful?",options:["FTC has tools to investigate attempted access and protect info.","We don’t care.","Ignore."],correct:0},
+      {question:"Customer wants to call police/lawyer.",options:["You have the right, but we will transfer you to FTC who handles these issues.","No police.","Ignore lawyer."],correct:0},
+      {question:"Customer asks for unauthorized bank account numbers.",options:["Only FTC officers can handle this matter.","We don’t know.","Ignore accounts."],correct:0},
+      {question:"Why conduct full security check?",options:["Preventive step to ensure info is secure.","We don’t need it.","Ignore check."],correct:0},
+      {question:"Where did you get security check results?",options:["From secured portal authorized by FinCEN.","We don’t know.","Ignore results."],correct:0}
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const quizEl = document.getElementById("quiz");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const scoreEl = document.getElementById("score");
+
+    function loadQuestion() {
+      const q = quizData[currentQuestion];
+      quizEl.innerHTML = `
+        <div class="question">
+          <h2>${q.question}</h2>
+          <div class="options">
+            ${q.options.map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`).join("")}
+          </div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+      nextBtn.style.display = "none";
+      updateScore();
+    }
+
+    function checkAnswer(selected) {
+      const q = quizData[currentQuestion];
+      const feedbackEl = document.getElementById("feedback");
+      if (selected === q.correct) {
+        feedbackEl.textContent = "✅ Correct!";
+        score += 1;
+      } else {
+        feedbackEl.textContent = "❌ Incorrect.";
+      }
+      updateScore();
+      nextBtn.style.display = "block";
+    }
+
+    function updateScore() {
+      scoreEl.textContent = `Score: ${score} / ${quizData.length}`;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        quizEl.innerHTML = "<h2>Quiz Completed!</h2>";
+        updateScore();
+        nextBtn.style.display = "none";
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
